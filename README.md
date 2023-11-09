@@ -1,22 +1,21 @@
 # 好市多上架自動通知-更新資訊
-要黑五了, 剛好有東西要買, 用現成的程式撈一下看看有沒有特價.
+要黑五了, 剛好有東西要買, 想買的也剛好是online only, 透過別人Github上現有的程式稍加修改, 撈一下看看有沒有特價以及庫存.
 ```
 # For using Ubuntu
 apt update && apt -y install python3 pip
 ./start
 ```
-## Update for what?
+## What has been updated?
 1. 一些修正
 2. 支持 Line Notify
 3. 支持 log儲存
 4. 顯示目前價格/特價價格
     1. 有特價: 原價格+特價價格
     2. 無特價: 目前價格
-5. 動態讀取產品列表-無須重啟城市
+5. 動態讀取產品列表-無須重啟程序
 6. Config 改用 .env 讀取
 
-### ~~config.json~~
-### .env.example
+### ~~config.json~~ -> .env.example
 ```
 cp .env.example .env
 vi .env
