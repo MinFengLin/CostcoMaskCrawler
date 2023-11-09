@@ -69,7 +69,7 @@ class costco:
         self.to_addr       = os.getenv('EMAIL_TO_ADDR')
 
         # 設定等待時間
-        self.next_search_time = os.getenv('NEXT_SEARCH_TIME')
+        self.next_search_time = int(os.getenv('NEXT_SEARCH_TIME'))
         self.continuous       = os.getenv('CONTINUOUS')
 
         # 設定checklog2file
