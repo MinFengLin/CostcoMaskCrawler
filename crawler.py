@@ -75,7 +75,7 @@ class costco:
         self.message = [
             "商品下架通知",
             "商品上架通知(無庫存)",
-            "商品上架通知(有庫存)"
+            "商品上架通知(可能有庫存, 可加入購物車)"
         ]
 
         '''
@@ -114,7 +114,8 @@ class costco:
             若不知道商品網址或編號，只有商品分類網址跟商品名稱，就直接搜尋名稱，但無法檢查按鈕
             '''
             if item["id"] != None and (soup.find(id="addToCartButton") != None or \
-                                       soup.find(id=("add-to-cart-button-" + item["id"])) != None):
+                                       soup.find(id=("add-to-cart-button-" + item["id"])) != None or \
+                                       soup.find(id="add-to-cart-button") ):
                 return 2
             elif item["title"] in res.text:
                 return 1
