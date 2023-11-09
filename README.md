@@ -1,9 +1,27 @@
-# 好市多上架自動通知
+# 好市多上架自動通知-更新資訊
 要黑五了, 剛好有東西要買, 用現成的程式撈一下看看有沒有特價.
 ```
 # For using Ubuntu
 apt update && apt -y install python3 pip
+./start
 ```
+## Update for what?
+1. 一些修正
+2. 支持 Line Notify
+3. 支持 log儲存
+4. 顯示目前價格/特價價格
+    1. 有特價: 原價格+特價價格
+    2. 無特價: 目前價格
+5. 動態讀取產品列表-無須重啟城市
+6. Config 改用 .env 讀取
+
+### ~~config.json~~
+### .env.example
+```
+cp .env.example .env
+vi .env
+```
+---
 
 # 好市多上架自動通知
 好市多所販售的中衛口罩在所有銷售通路中相較便宜，但上架時間不定，因此撰寫此爬蟲，自動檢查商品是否上架。
