@@ -93,7 +93,7 @@ class costco:
         self.message = [
             "商品下架通知",
             "商品上架通知(無庫存)",
-            "商品上架通知(可能有庫存, 可加入購物車)"
+            "商品上架/價格變動通知(可能有庫存, 可加入購物車)"
         ]
 
         '''
@@ -153,10 +153,11 @@ class costco:
 
                 no_update = "No Update: "
                 for item in self.products:
-                    result = self.search(item)
-                    if result != item.status:
-                        item.status = result
-                        item.price = self.price
+                    status_result = self.search(item)
+                    price_update = self.price
+                    if status_result != item.status or price_update != item.price:
+                        item.status = status_result
+                        item.price = price_update
                         logging.info(item.title + " " + item.url)
                         if self.line_notify:
                             self.send_line_notify(item)
