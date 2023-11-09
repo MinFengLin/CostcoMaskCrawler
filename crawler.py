@@ -56,6 +56,9 @@ class costco:
             self.next_search_time = config["time"]["next_search_time"]
             self.continuous = config["time"]["continuous"]
 
+            # 設定checklog2file
+            self.save_check_timestamp_2_file = config["log_save"]["save_check_timestamp_2_file"]
+
             # 設定 user-agent
             self.USER_AGENT_LIST = config["agent"]["user-agent"]
 
@@ -94,6 +97,18 @@ class costco:
         while True:
             self.nowtime = datetime.now(pytz.timezone("Asia/Taipei"))
             if self.check_time():
+                logging.info("check " + self.nowtime.strftime("%Y-%m-%d %H:%M:%S"))
+                if self.save_check_timestamp_2_file:
+                    with open('check_log_record', 'r') as file:
+                        lines = file.readlines()
+
+                    if len(lines) >= 10:
+                        with open('check_log_record', 'w') as file:
+                            file.write("check " + self.nowtime.strftime("%Y-%m-%d %H:%M:%S") + '\n')
+                    else:
+                        with open('check_log_record', 'a') as file:
+                            file.write("check " + self.nowtime.strftime("%Y-%m-%d %H:%M:%S") + '\n')
+
                 for item in self.product:
                     result = self.search(item)
                     if result != item["status"]:

@@ -14,6 +14,9 @@
         "from_addr": "sender@gmail.com",
         "to_addr": "receiver@gmail.com"
     },
+    "log_save" : {
+        "save_check_timestamp_2_file" : false
+    },
     "time": {
         "next_search_time": 60,
         "continuous": false
