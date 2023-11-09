@@ -40,9 +40,9 @@ class costco:
         logging.basicConfig(level=logging.INFO, format="%(asctime)s, %(levelname)s: %(message)s", \
                             datefmt="%Y-%m-%d %H:%M:%S")
 
-        configFileName = "url_config.json"
-        if not os.path.isfile(configFileName):
-            print("could not find", configFileName)
+        UserAgentConfigFileName = "user_agent_config.json"
+        if not os.path.isfile(UserAgentConfigFileName):
+            print("could not find", UserAgentConfigFileName)
             exit()
 
         productFileName = "product.json"
@@ -76,7 +76,7 @@ class costco:
         self.save_check_timestamp_2_file = os.getenv('SAVE_CHECK_TIMESTAMP_2_FILE')
 
         # 讀取user-agent設定
-        with open(configFileName, "r", encoding="utf-8") as json_file:
+        with open(UserAgentConfigFileName, "r", encoding="utf-8") as json_file:
             config = json.load(json_file)
 
             # 設定 user-agent
