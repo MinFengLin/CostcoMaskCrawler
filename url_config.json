@@ -1,26 +1,4 @@
 {
-    "line": {
-        "line_notify": true,
-        "line_notify_token": "",
-        "line_bot": false,
-        "line_bot_token": ""
-    },
-    "email": {
-        "email_service": false,
-        "server": "smtp.gmail.com",
-        "port": "587",
-        "user": "account",
-        "password": "password",
-        "from_addr": "sender@gmail.com",
-        "to_addr": "receiver@gmail.com"
-    },
-    "log_save" : {
-        "save_check_timestamp_2_file" : false
-    },
-    "time": {
-        "next_search_time": 60,
-        "continuous": false
-    },
     "agent": {
         "user-agent": [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",

@@ -18,6 +18,7 @@ from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from linebot.exceptions import LineBotApiError
 from typing import List
+from dotenv import load_dotenv
 
 class Product:
     def __init__(self, title, url, status=0, price='N/A', id=None):
@@ -39,7 +40,7 @@ class costco:
         logging.basicConfig(level=logging.INFO, format="%(asctime)s, %(levelname)s: %(message)s", \
                             datefmt="%Y-%m-%d %H:%M:%S")
 
-        configFileName = "config.json"
+        configFileName = "url_config.json"
         if not os.path.isfile(configFileName):
             print("could not find", configFileName)
             exit()
@@ -50,30 +51,33 @@ class costco:
             exit()
 
         # 讀取設定
+        load_dotenv()
+
+        # 設定 Line API
+        self.line_notify       = os.getenv('LINE_NOTIFY')
+        self.line_notify_token = os.getenv('LINE_NOTIFY_TOKEN')
+        self.line_bot          = os.getenv('LINE_BOT')
+        self.line_bot_token    = os.getenv('LINE_BOT_TOKEN')
+
+        # 設定信箱
+        self.email_service = os.getenv('EMAIL_SERVICE')
+        self.server        = os.getenv('EMAIL_SERVER')
+        self.port          = os.getenv('EMAIL_PORT')
+        self.user          = os.getenv('EMAIL_USER')
+        self.password      = os.getenv('EMAIL_PASSWORD')
+        self.from_addr     = os.getenv('EMAIL_FROM_ADDR')
+        self.to_addr       = os.getenv('EMAIL_TO_ADDR')
+
+        # 設定等待時間
+        self.next_search_time = os.getenv('NEXT_SEARCH_TIME')
+        self.continuous       = os.getenv('CONTINUOUS')
+
+        # 設定checklog2file
+        self.save_check_timestamp_2_file = os.getenv('SAVE_CHECK_TIMESTAMP_2_FILE')
+
+        # 讀取user-agent設定
         with open(configFileName, "r", encoding="utf-8") as json_file:
             config = json.load(json_file)
-
-            # 設定 Line API
-            self.line_notify       = config["line"]["line_notify_token"]
-            self.line_notify_token = config["line"]["line_notify_token"]
-            self.line_bot          = config["line"]["line_bot"]
-            self.line_bot_token    = config["line"]["line_bot_token"]
-
-            # 設定信箱
-            self.email_service = config["email"]["email_service"]
-            self.server        = config["email"]["server"]
-            self.port          = config["email"]["port"]
-            self.user          = config["email"]["user"]
-            self.password      = config["email"]["password"]
-            self.from_addr     = config["email"]["from_addr"]
-            self.to_addr       = config["email"]["to_addr"]
-
-            # 設定等待時間
-            self.next_search_time = config["time"]["next_search_time"]
-            self.continuous = config["time"]["continuous"]
-
-            # 設定checklog2file
-            self.save_check_timestamp_2_file = config["log_save"]["save_check_timestamp_2_file"]
 
             # 設定 user-agent
             self.USER_AGENT_LIST = config["agent"]["user-agent"]
@@ -87,7 +91,7 @@ class costco:
                 # 創建Product實例並添加到列表
                 self.products.append(Product(item["title"], item["url"]))
         
-        if self.line_bot:
+        if self.line_bot.lower() != 'false':
             self.line_bot_api = LineBotApi(self.line_bot_token)
 
         self.message = [
@@ -140,7 +144,11 @@ class costco:
             if self.check_time():
                 logging.info("check " + self.nowtime.strftime("%Y-%m-%d %H:%M:%S"))
                 self.Updateproduct()
-                if self.save_check_timestamp_2_file:
+                if self.save_check_timestamp_2_file.lower() != 'false':
+                    if not os.path.isfile('check_log_record'):
+                        with open('check_log_record', 'w') as file:
+                            pass
+
                     with open('check_log_record', 'r') as file:
                         lines = file.readlines()
 
@@ -159,11 +167,11 @@ class costco:
                         item.status = status_result
                         item.price = price_update
                         logging.info(item.title + " " + item.url)
-                        if self.line_notify:
+                        if self.line_notify.lower() != 'false':
                             self.send_line_notify(item)
-                        if self.line_bot:
+                        if self.line_bot.lower() != 'false':
                             self.send_line_bot(item)
-                        if self.email_service:
+                        if self.email_service.lower() != 'false':
                             self.send_email(item)
                     else:
                         no_update = no_update + item.title + "/"
