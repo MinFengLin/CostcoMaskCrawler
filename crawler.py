@@ -38,15 +38,19 @@ class costco:
             config = json.load(json_file)
 
             # 設定 Line API
-            self.line_bot_token = config["line"]["line_bot_channel_access_token"]
+            self.line_notify       = config["line"]["line_notify_token"]
+            self.line_notify_token = config["line"]["line_notify_token"]
+            self.line_bot          = config["line"]["line_bot"]
+            self.line_bot_token    = config["line"]["line_bot_token"]
 
             # 設定信箱
-            self.server = config["email"]["server"]
-            self.port = config["email"]["port"]
-            self.user = config["email"]["user"]
-            self.password = config["email"]["password"]
-            self.from_addr = config["email"]["from_addr"]
-            self.to_addr = config["email"]["to_addr"]
+            self.email_service = config["email"]["email_service"]
+            self.server        = config["email"]["server"]
+            self.port          = config["email"]["port"]
+            self.user          = config["email"]["user"]
+            self.password      = config["email"]["password"]
+            self.from_addr     = config["email"]["from_addr"]
+            self.to_addr       = config["email"]["to_addr"]
 
             # 設定等待時間
             self.next_search_time = config["time"]["next_search_time"]
@@ -69,8 +73,8 @@ class costco:
                     item["id"] = None
                 item["status"] = 0
                 self.product.append(item)
-
-        self.line_bot_api = LineBotApi(self.line_bot_token)
+        if self.line_bot:
+            self.line_bot_api = LineBotApi(self.line_bot_token)
 
         self.message = [
             "商品下架通知",
@@ -95,8 +99,13 @@ class costco:
                     if result != item["status"]:
                         item["status"] = result
                         logging.info(item["title"] + " " + item["url"])
-                        self.send_line(item)
-                        self.send_email(item)
+                        if self.line_notify:
+                            self.send_line_notify(item)
+                        if self.line_bot:
+                            self.send_line_bot(item)
+                        if self.email_service:
+                            self.send_email(item)
+
             time.sleep(random.randint(10, self.next_search_time))
 
 
@@ -138,8 +147,7 @@ class costco:
             return True
         return False
 
-
-    # 寄信通知
+    # email通知
     def send_email(self, item):
         text = self.nowtime.strftime("%Y-%m-%d %H:%M:%S ") + item["title"] + "\n" + item["url"]
 
@@ -159,9 +167,26 @@ class costco:
         logging.info("郵件傳送失敗")
         return False
 
+    # line_notify通知
+    def send_line_notify(self, item):
+        notify_url = 'https://notify-api.line.me/api/notify'
+        token = self.line_notify_token
+        headers = {
+            'Authorization': 'Bearer ' + token    # 設定token
+        }
+        data = {
+            'message': self.message[item["status"]] + "\n" + \
+                       self.nowtime.strftime("%Y-%m-%d %H:%M:%S") + "\n" + \
+                       item["title"] + "\n" + item["url"]
+        }
+        # logging.info(notify_url)
+        # logging.info(headers)
+        # logging.info(data)
 
-    # 傳line通知
-    def send_line(self, item):
+        requests.post(notify_url, headers=headers, data=data)
+
+    # line_bot通知
+    def send_line_bot(self, item):
         text = self.message[item["status"]] + "\n" + \
                self.nowtime.strftime("%Y-%m-%d %H:%M:%S") + "\n" + item["title"] + "\n" + item["url"]
         try:
