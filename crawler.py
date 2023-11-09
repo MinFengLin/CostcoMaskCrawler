@@ -113,6 +113,7 @@ class costco:
                     result = self.search(item)
                     if result != item["status"]:
                         item["status"] = result
+                        item["price"] = self.price
                         logging.info(item["title"] + " " + item["url"])
                         if self.line_notify:
                             self.send_line_notify(item)
@@ -131,6 +132,12 @@ class costco:
         }
         with requests.get(item["url"], headers=header) as res:
             soup = BeautifulSoup(res.text, "lxml")
+            span_price_tag = soup.find('span', class_='notranslate ng-star-inserted')
+            self.price = span_price_tag.get_text()
+            if (soup.find('span', class_='you-pay-value') != None):
+                span_save_tag = soup.find('span', class_='you-pay-value')
+                self.price = "原價:" + self.price + ", 特價: " + span_save_tag.get_text()
+
             '''
             商品頁面存在，可以找到 addToCartButton
             商品頁面不存在則會自動跳回分類列表，若分類列表存在商品，可能可以找到 add-to-cart-button-xxxxxx
@@ -192,6 +199,7 @@ class costco:
         data = {
             'message': self.message[item["status"]] + "\n" + \
                        self.nowtime.strftime("%Y-%m-%d %H:%M:%S") + "\n" + \
+                       item["price"] + "\n" + \
                        item["title"] + "\n" + item["url"]
         }
         # logging.info(notify_url)
